@@ -6,7 +6,7 @@
 /*   By: henrik <henrik@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/08/14 16:52:42 by henrik            #+#    #+#             */
-/*   Updated: 2023/09/04 16:43:04 by henrik           ###   ########lyon.fr   */
+/*   Updated: 2023/09/06 11:07:37 by henrik           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,19 +42,21 @@ void	ft_check_death(t_data *data)
 	{
 		while (i < data->nb_philo)
 		{
+			pthread_mutex_lock(data->philo->message);
 			if ((ft_get_timer() - data->philo[i].last_meal) > data->time_to_die)
 			{
-				pthread_mutex_lock(data->philo->message);
 				time = (ft_get_timer() -	data->philo[i].start);
 				printf("%lld\t%d died\n", time, i + 1);
-				pthread_mutex_unlock(data->philo->message);
 				data->death = 1;
 			}
+			pthread_mutex_unlock(data->philo->message);
 			i++;
 		}
 		i = 0;
+		pthread_mutex_lock(data->philo->message);
 		if (data->philo[i].nb_eat == data->max_eat)
 			return ;
+		pthread_mutex_unlock(data->philo->message);
 	}
 }
 
@@ -76,7 +78,9 @@ void	ft_eat(t_philo *philo)
 	pthread_mutex_lock(philo->right_fork);
 	ft_print_message(philo, "has taken a fork");
 	ft_print_message(philo, "is eating");
+	pthread_mutex_lock(philo->message);
 	philo->last_meal = ft_get_timer();
+	pthread_mutex_unlock(philo->message);
 	usleep(philo->time_to_eat * 1000);
 	pthread_mutex_unlock(philo->right_fork);
 	pthread_mutex_unlock(philo->left_fork);
@@ -92,7 +96,9 @@ void	*routine(void *arg)
 	while (*(philo->death) != 1)
 	{
 		ft_eat(philo);
+		pthread_mutex_lock(philo->message);
 		philo->nb_eat += 1;
+		pthread_mutex_unlock(philo->message);
 		if (philo->nb_eat == philo->max_eat)
 			break ;
 		ft_sleep(philo);
