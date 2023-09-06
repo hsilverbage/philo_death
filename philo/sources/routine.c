@@ -6,7 +6,7 @@
 /*   By: henrik <henrik@student.42lyon.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/09/06 11:09:39 by henrik            #+#    #+#             */
-/*   Updated: 2023/09/06 11:29:31 by henrik           ###   ########lyon.fr   */
+/*   Updated: 2023/09/06 11:31:10 by henrik           ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	ft_check_death(t_data *data)
 		while (i < data->nb_philo)
 		{
 			pthread_mutex_lock(data->philo->message);
-			if ((ft_get_timer() - data->philo[i].last_meal) > data->time_to_die)
+			if (ft_get_timer() - data->philo[i].last_meal > data->time_to_die)
 			{
 				time = (ft_get_timer() - data->philo[i].start);
 				if (data->philo[i].nb_eat != data->max_eat)
